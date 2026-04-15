@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('Venta - Formulario')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar}"></aside>
+<div class="main-content">
+    <div class="topbar">
+        <h1 th:text="${venta.codigoVenta != null} ? '✏️ Editar Venta' : '➕ Nueva Venta'">Venta</h1>
+        <div class="topbar-actions">
+            <a th:href="@{/ventas}" class="btn btn-secondary">← Volver</a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="card" style="max-width:700px;margin:0 auto">
+            <div class="card-header">
+                <h2 th:text="${venta.codigoVenta != null} ? 'Editar Venta #' + ${venta.codigoVenta} : 'Registrar nueva venta'"></h2>
+            </div>
+            <div class="card-body">
+
+                <!-- NUEVA VENTA -->
+                <form th:if="${venta.codigoVenta == null}"
+                      th:action="@{/ventas}" method="post">
+
+                    <div class="form-group">
+                        <label for="clienteDpi">Cliente *</label>
+                        <select class="form-control" id="clienteDpi" name="clienteDpi" required>
+                            <option value="">-- Seleccionar cliente --</option>
+                            <option th:each="c : ${clientes}"
+                                    th:value="${c.DPICliente}"
+                                    th:text="${c.nombreCliente + ' ' + c.apellidoCliente + ' (' + c.DPICliente + ')'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usuarioId">Usuario *</label>
+                        <select class="form-control" id="usuarioId" name="usuarioId" required>
+                            <option value="">-- Seleccionar usuario --</option>
+                            <option th:each="u : ${usuarios}"
+                                    th:value="${u.codigoUsuario}"
+                                    th:text="${u.username + ' (' + u.rol + ')'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="total">Total (Q.) *</label>
+                            <input class="form-control" type="number" id="total"
+                                   name="total" required min="0.01" step="0.01" placeholder="0.00"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado *</label>
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="1">Activa</option>
+                                <option value="0">Anulada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        ℹ️ La fecha se registrará automáticamente al momento de guardar.
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Guardar Venta</button>
+                        <a th:href="@{/ventas}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+                <!-- EDITAR VENTA -->
+                <form th:if="${venta.codigoVenta != null}"
+                      th:action="@{/ventas/actualizar/{id}(id=${venta.codigoVenta})}" method="post">
+
+                    <div class="form-group">
+                        <label>Código de Venta</label>
+                        <input class="form-control" type="text" th:value="${venta.codigoVenta}" readonly/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clienteDpiE">Cliente *</label>
+                        <select class="form-control" id="clienteDpiE" name="clienteDpi" required>
+                            <option value="">-- Seleccionar cliente --</option>
+                            <option th:each="c : ${clientes}"
+                                    th:value="${c.DPICliente}"
+                                    th:selected="${venta.cliente != null and venta.cliente.DPICliente == c.DPICliente}"
+                                    th:text="${c.nombreCliente + ' ' + c.apellidoCliente + ' (' + c.DPICliente + ')'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usuarioIdE">Usuario *</label>
+                        <select class="form-control" id="usuarioIdE" name="usuarioId" required>
+                            <option value="">-- Seleccionar usuario --</option>
+                            <option th:each="u : ${usuarios}"
+                                    th:value="${u.codigoUsuario}"
+                                    th:selected="${venta.usuario != null and venta.usuario.codigoUsuario == u.codigoUsuario}"
+                                    th:text="${u.username + ' (' + u.rol + ')'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="totalE">Total (Q.) *</label>
+                            <input class="form-control" type="number" id="totalE"
+                                   name="total" th:value="${venta.total}"
+                                   required min="0.01" step="0.01"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="estadoE">Estado *</label>
+                            <select class="form-control" id="estadoE" name="estado" required>
+                                <option value="1" th:selected="${venta.estado == 1}">Activa</option>
+                                <option value="0" th:selected="${venta.estado == 0}">Anulada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="fechaVenta" th:value="${venta.fechaVenta}"/>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-warning">💾 Actualizar Venta</button>
+                        <a th:href="@{/ventas}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
