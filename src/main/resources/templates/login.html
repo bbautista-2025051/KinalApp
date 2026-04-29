@@ -15,14 +15,17 @@
             <p>Ingresa tus credenciales para continuar</p>
         </div>
 
-        <div th:if="${param.logout}" class="alert alert-success">
+        <!-- Mensaje de logout exitoso -->
+        <div th:if="${logout}" class="alert alert-success">
             ✅ Has cerrado sesión correctamente.
         </div>
 
+        <!-- Mensaje de error (viene del Model, no de flash attributes) -->
         <div th:if="${error}" class="alert alert-danger">
             <span th:text="${error}"></span>
         </div>
 
+        <!-- Spring Security procesa el POST /login automáticamente -->
         <form class="login-form" th:action="@{/login}" method="post">
             <div class="form-group">
                 <label for="username">Usuario</label>
