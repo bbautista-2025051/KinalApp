@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | KinalApp</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>🏪 KinalApp</h2>
+            <p>Ingresa tus credenciales para continuar</p>
+        </div>
+
+        <!-- Mensaje de logout exitoso -->
+        <div th:if="${logout}" class="alert alert-success">
+            ✅ Has cerrado sesión correctamente.
+        </div>
+
+        <!-- Mensaje de error (viene del Model, no de flash attributes) -->
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Spring Security procesa el POST /login automáticamente -->
+        <form class="login-form" th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" class="form-control"
+                       placeholder="Tu nombre de usuario" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-login">Iniciar Sesión</button>
+        </form>
+
+        <div class="login-footer">
+            ¿No tienes cuenta? <a th:href="@{/registro}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Regístrate aquí</a>
+            <br><br>
+            &copy; 2026 KinalApp. Todos los derechos reservados.
+        </div>
+    </div>
+</div>
+</body>
+</html>

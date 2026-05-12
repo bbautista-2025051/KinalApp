@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('Producto - Formulario')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar}"></aside>
+<div class="main-content">
+    <div class="topbar">
+        <h1 th:text="${producto.codigoProducto != null} ? '✏️ Editar Producto' : '➕ Nuevo Producto'">Producto</h1>
+        <div class="topbar-actions">
+            <a th:href="@{/productos}" class="btn btn-secondary">← Volver</a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="card" style="max-width:680px;margin:0 auto">
+            <div class="card-header">
+                <h2 th:text="${producto.codigoProducto != null} ? 'Editar Producto #' + ${producto.codigoProducto} : 'Registrar nuevo producto'"></h2>
+            </div>
+            <div class="card-body">
+
+                <!-- FORMULARIO NUEVO -->
+                <form th:if="${producto.codigoProducto == null}"
+                      th:action="@{/productos}" method="post" id="productoForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombreProducto">Nombre del Producto *</label>
+                            <input class="form-control" type="text" id="nombreProducto"
+                                   name="nombreProducto" th:value="${producto.nombreProducto}"
+                                   required placeholder="Ej: Laptop Dell"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="precio">Precio (Q.) *</label>
+                            <input class="form-control" type="number" id="precio"
+                                   name="precio" th:value="${producto.precio}"
+                                   required min="0.01" step="0.01" placeholder="0.00"/>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stock">Stock *</label>
+                            <input class="form-control" type="number" id="stock"
+                                   name="stock" th:value="${producto.stock}"
+                                   required min="0" placeholder="0"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado *</label>
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="1" th:selected="${producto.estado == 1}">Activo</option>
+                                <option value="0" th:selected="${producto.estado == 0}">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Guardar Producto</button>
+                        <a th:href="@{/productos}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+                <!-- FORMULARIO EDITAR -->
+                <form th:if="${producto.codigoProducto != null}"
+                      th:action="@{/productos/actualizar/{id}(id=${producto.codigoProducto})}" method="post" id="productoFormEdit">
+                    <div class="form-group">
+                        <label>Código</label>
+                        <input class="form-control" type="text" th:value="${producto.codigoProducto}" readonly/>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombreProductoE">Nombre del Producto *</label>
+                            <input class="form-control" type="text" id="nombreProductoE"
+                                   name="nombreProducto" th:value="${producto.nombreProducto}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="precioE">Precio (Q.) *</label>
+                            <input class="form-control" type="number" id="precioE"
+                                   name="precio" th:value="${producto.precio}" required min="0.01" step="0.01"/>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stockE">Stock *</label>
+                            <input class="form-control" type="number" id="stockE"
+                                   name="stock" th:value="${producto.stock}" required min="0"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="estadoE">Estado *</label>
+                            <select class="form-control" id="estadoE" name="estado" required>
+                                <option value="1" th:selected="${producto.estado == 1}">Activo</option>
+                                <option value="0" th:selected="${producto.estado == 0}">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-warning">💾 Actualizar Producto</button>
+                        <a th:href="@{/productos}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

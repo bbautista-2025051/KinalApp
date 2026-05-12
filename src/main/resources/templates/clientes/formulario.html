@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('Cliente - Formulario')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar}"></aside>
+<div class="main-content">
+    <div class="topbar">
+        <h1 th:text="${cliente.DPICliente != null and !#strings.isEmpty(cliente.DPICliente)} ? '✏️ Editar Cliente' : '➕ Nuevo Cliente'">Cliente</h1>
+        <div class="topbar-actions">
+            <a th:href="@{/clientes}" class="btn btn-secondary">← Volver</a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="card" style="max-width:680px;margin:0 auto">
+            <div class="card-header">
+                <h2 th:text="${cliente.DPICliente != null and !#strings.isEmpty(cliente.DPICliente)} ? 'Editar Cliente: ' + ${cliente.DPICliente} : 'Registrar nuevo cliente'"></h2>
+            </div>
+            <div class="card-body">
+
+                <!-- NUEVO -->
+                <form th:if="${cliente.DPICliente == null or #strings.isEmpty(cliente.DPICliente)}"
+                      th:action="@{/clientes}" method="post">
+                    <div class="form-group">
+                        <label for="dpi">DPI (13 dígitos) *</label>
+                        <input class="form-control" type="text" id="dpi" name="DPICliente"
+                               required maxlength="13" pattern="\d{13}"
+                               placeholder="0000000000000"/>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre *</label>
+                            <input class="form-control" type="text" id="nombre"
+                                   name="nombreCliente" th:value="${cliente.nombreCliente}"
+                                   required placeholder="Nombre"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellido">Apellido *</label>
+                            <input class="form-control" type="text" id="apellido"
+                                   name="apellidoCliente" th:value="${cliente.apellidoCliente}"
+                                   required placeholder="Apellido"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion">Dirección *</label>
+                        <input class="form-control" type="text" id="direccion"
+                               name="direccion" th:value="${cliente.direccion}"
+                               required placeholder="Ciudad, Colonia..."/>
+                    </div>
+                    <div class="form-group">
+                        <label for="estado">Estado *</label>
+                        <select class="form-control" id="estado" name="estado" required>
+                            <option value="1" th:selected="${cliente.estado == 1}">Activo</option>
+                            <option value="0" th:selected="${cliente.estado == 0}">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Guardar Cliente</button>
+                        <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+                <!-- EDITAR -->
+                <form th:if="${cliente.DPICliente != null and !#strings.isEmpty(cliente.DPICliente)}"
+                      th:action="@{/clientes/actualizar/{dpi}(dpi=${cliente.DPICliente})}" method="post">
+                    <div class="form-group">
+                        <label>DPI</label>
+                        <input class="form-control" type="text" th:value="${cliente.DPICliente}" readonly/>
+                        <input type="hidden" name="DPICliente" th:value="${cliente.DPICliente}"/>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombreE">Nombre *</label>
+                            <input class="form-control" type="text" id="nombreE"
+                                   name="nombreCliente" th:value="${cliente.nombreCliente}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellidoE">Apellido *</label>
+                            <input class="form-control" type="text" id="apellidoE"
+                                   name="apellidoCliente" th:value="${cliente.apellidoCliente}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccionE">Dirección *</label>
+                        <input class="form-control" type="text" id="direccionE"
+                               name="direccion" th:value="${cliente.direccion}" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="estadoE">Estado *</label>
+                        <select class="form-control" id="estadoE" name="estado" required>
+                            <option value="1" th:selected="${cliente.estado == 1}">Activo</option>
+                            <option value="0" th:selected="${cliente.estado == 0}">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-warning">💾 Actualizar Cliente</button>
+                        <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
