@@ -1,10 +1,6 @@
-/* =========================================
-   KinalApp – JavaScript Global
-   ========================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ── Marcar enlace activo en el sidebar ──────────────────────
     const links = document.querySelectorAll('.sidebar-nav a');
     const path  = window.location.pathname;
     links.forEach(link => {
@@ -16,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ── Botones de eliminar: leer data-url y data-name ──────────
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', () => {
             const url  = btn.getAttribute('data-url');
@@ -25,14 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ── Búsqueda en tabla ───────────────────────────────────────
     initTableSearch();
 
-    // ── Auto-cerrar alertas ─────────────────────────────────────
     autoCloseAlerts();
 });
 
-// ── Modal de confirmación de eliminación ─────────────────────────
 function openDeleteModal(url, name) {
     const overlay    = document.getElementById('deleteModal');
     const nameEl     = document.getElementById('deleteItemName');
@@ -55,7 +47,6 @@ document.addEventListener('click', e => {
     }
 });
 
-// ── Búsqueda en tabla ────────────────────────────────────────────
 function initTableSearch() {
     const searchInput = document.getElementById('tableSearch');
     if (!searchInput) return;
@@ -76,7 +67,6 @@ function initTableSearch() {
     });
 }
 
-// ── Auto-cerrar alertas ──────────────────────────────────────────
 function autoCloseAlerts() {
     document.querySelectorAll('.alert[data-auto-close]').forEach(alert => {
         setTimeout(() => {

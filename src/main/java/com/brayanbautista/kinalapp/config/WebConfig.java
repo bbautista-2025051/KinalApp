@@ -1,31 +1,11 @@
 package com.brayanbautista.kinalapp.config;
 
-import com.brayanbautista.kinalapp.interceptor.AuthInterceptor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-    private final AuthInterceptor authInterceptor;
-
-    public WebConfig(AuthInterceptor authInterceptor) {
-        this.authInterceptor = authInterceptor;
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/login",
-                        "/logout",
-                        "/registro",
-                        "/css/**",
-                        "/js/**",
-                        "/images/**",
-                        "/webjars/**"
-                );
-    }
+    // Spring Security ya maneja la autenticación/autorización de rutas.
+    // No se necesita un interceptor adicional; el filtro de seguridad
+    // configurado en SecurityConfig protege todas las rutas correctamente.
 }
