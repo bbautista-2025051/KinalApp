@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Detalles Venta')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Detalles de Venta</h1>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/detalles-venta/nuevo}" class="btn btn-primary">+ Nuevo Detalle</a>
+            </div>
+        </div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-error" th:text="${errorMsg}"></div>
+        <div class="card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID Detalle</th><th>Venta ID</th><th>Producto</th><th>Cantidad</th>
+                    <th>Precio Unit.</th><th>Subtotal</th>
+                    <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="d : ${detalles}">
+                    <td th:text="${d.codigoDetalleVenta}"></td>
+                    <td th:text="${d.venta.codigoVenta}"></td>
+                    <td th:text="${d.producto.nombreProducto}"></td>
+                    <td th:text="${d.cantidad}"></td>
+                    <td>Q. <span th:text="${#numbers.formatDecimal(d.precioUnitario,1,2)}"></span></td>
+                    <td>Q. <span th:text="${#numbers.formatDecimal(d.subtotal,1,2)}"></span></td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/detalles-venta/editar/{id}(id=${d.codigoDetalleVenta})}" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm btn-delete"
+                                th:data-url="@{/detalles-venta/eliminar/{id}(id=${d.codigoDetalleVenta})}"
+                                th:data-name="'Detalle #' + ${d.codigoDetalleVenta}">Eliminar</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(detalles)}">
+                    <td colspan="7">No hay detalles registrados.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/layout :: deleteModal}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
