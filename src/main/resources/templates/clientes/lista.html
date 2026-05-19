@@ -1,69 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Clientes')}"></head>
 <body>
-<aside th:replace="~{fragments/layout :: sidebar}"></aside>
-<div class="main-content">
-    <div class="topbar">
-        <h1>👥 Gestión de Clientes</h1>
-        <div class="topbar-actions">
-            <a th:href="@{/clientes/nuevo}" class="btn btn-primary">➕ Nuevo Cliente</a>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Clientes</h1>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/clientes/nuevo}" class="btn btn-primary">+ Nuevo Cliente</a>
+            </div>
         </div>
-    </div>
-    <div class="page-content">
-        <div th:if="${successMsg}" class="alert alert-success" data-auto-close>✅ <span th:text="${successMsg}"></span></div>
-        <div th:if="${errorMsg}" class="alert alert-danger" data-auto-close>❌ <span th:text="${errorMsg}"></span></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-error" th:text="${errorMsg}"></div>
         <div class="card">
-            <div class="card-header">
-                <h2>Lista de Clientes</h2>
-                <div class="search-bar" style="margin:0">
-                    <input type="text" id="tableSearch" placeholder="🔍 Buscar cliente..." />
-                </div>
-            </div>
-            <div class="card-body" style="padding:0">
-                <div th:if="${#lists.isEmpty(clientes)}" class="empty-state">
-                    <div class="icon">👥</div>
-                    <p>No hay clientes registrados.</p>
-                    <a th:href="@{/clientes/nuevo}" class="btn btn-primary" style="margin-top:16px">➕ Nuevo Cliente</a>
-                </div>
-                <div th:if="${not #lists.isEmpty(clientes)}" class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>DPI</th><th>Nombre</th><th>Apellido</th><th>Dirección</th><th>Estado</th><th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="c : ${clientes}">
-                                <td th:text="${c.DPICliente}"></td>
-                                <td th:text="${c.nombreCliente}"></td>
-                                <td th:text="${c.apellidoCliente}"></td>
-                                <td th:text="${c.direccion}"></td>
-                                <td>
-                                    <span th:if="${c.estado == 1}" class="badge badge-active">Activo</span>
-                                    <span th:if="${c.estado == 0}" class="badge badge-inactive">Inactivo</span>
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px">
-                                        <a th:href="@{/clientes/editar/{dpi}(dpi=${c.DPICliente})}"
-                                           class="btn btn-warning btn-sm">✏️ Editar</a>
-                                        <button class="btn btn-danger btn-sm btn-delete"
-                                                th:data-url="@{/clientes/eliminar/{dpi}(dpi=${c.DPICliente})}"
-                                                th:data-name="${c.nombreCliente + ' ' + c.apellidoCliente}">
-                                            🗑️ Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="emptySearch" class="empty-state" style="display:none;padding:30px">
-                        <p>No se encontraron resultados.</p>
-                    </div>
-                </div>
-            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>DPI</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${clientes}">
+                    <td th:text="${c.DPICliente}"></td>
+                    <td th:text="${c.nombreCliente}"></td>
+                    <td th:text="${c.apellidoCliente}"></td>
+                    <td th:text="${c.direccion}"></td>
+                    <td>
+                        <span th:class="${c.estado == 1} ? 'badge badge-active' : 'badge badge-inactive'"
+                              th:text="${c.estado == 1} ? 'Activo' : 'Inactivo'"></span>
+                    </td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/clientes/editar/{token}(token=${c.encryptedId})}" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm btn-delete"
+                                th:data-url="@{/clientes/eliminar/{token}(token=${c.encryptedId})}"
+                                th:data-name="${c.nombreCliente + ' ' + c.apellidoCliente}">Eliminar</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(clientes)}">
+                    <td colspan="6">No hay clientes registrados.</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
+    </main>
 </div>
 <div th:replace="~{fragments/layout :: deleteModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
