@@ -1,69 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Productos')}"></head>
 <body>
-<aside th:replace="~{fragments/layout :: sidebar}"></aside>
-<div class="main-content">
-    <div class="topbar">
-        <h1>📦 Gestión de Productos</h1>
-        <div class="topbar-actions">
-            <a th:href="@{/productos/nuevo}" class="btn btn-primary">➕ Nuevo Producto</a>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Productos</h1>
+            <div sec:authorize="hasAnyRole('ADMIN', 'USER')">
+                <a th:href="@{/productos/nuevo}" class="btn btn-primary">+ Nuevo Producto</a>
+            </div>
         </div>
-    </div>
-    <div class="page-content">
-        <div th:if="${successMsg}" class="alert alert-success" data-auto-close>✅ <span th:text="${successMsg}"></span></div>
-        <div th:if="${errorMsg}" class="alert alert-danger" data-auto-close>❌ <span th:text="${errorMsg}"></span></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-error" th:text="${errorMsg}"></div>
         <div class="card">
-            <div class="card-header">
-                <h2>Lista de Productos</h2>
-                <div class="search-bar" style="margin:0">
-                    <input type="text" id="tableSearch" placeholder="🔍 Buscar producto..." />
-                </div>
-            </div>
-            <div class="card-body" style="padding:0">
-                <div th:if="${#lists.isEmpty(productos)}" class="empty-state">
-                    <div class="icon">📦</div>
-                    <p>No hay productos registrados.</p>
-                    <a th:href="@{/productos/nuevo}" class="btn btn-primary" style="margin-top:16px">➕ Nuevo Producto</a>
-                </div>
-                <div th:if="${not #lists.isEmpty(productos)}" class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="p : ${productos}">
-                                <td th:text="${p.codigoProducto}"></td>
-                                <td th:text="${p.nombreProducto}"></td>
-                                <td>Q. <span th:text="${#numbers.formatDecimal(p.precio, 1, 2)}"></span></td>
-                                <td th:text="${p.stock}"></td>
-                                <td>
-                                    <span th:if="${p.estado == 1}" class="badge badge-active">Activo</span>
-                                    <span th:if="${p.estado == 0}" class="badge badge-inactive">Inactivo</span>
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px">
-                                        <a th:href="@{/productos/editar/{id}(id=${p.codigoProducto})}"
-                                           class="btn btn-warning btn-sm">✏️ Editar</a>
-                                        <button class="btn btn-danger btn-sm btn-delete"
-                                                th:data-url="@{/productos/eliminar/{id}(id=${p.codigoProducto})}"
-                                                th:data-name="${p.nombreProducto}">
-                                            🗑️ Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="emptySearch" class="empty-state" style="display:none;padding:30px">
-                        <p>No se encontraron resultados.</p>
-                    </div>
-                </div>
-            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Estado</th>
+                    <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${productos}">
+                    <td th:text="${p.codigoProducto}"></td>
+                    <td th:text="${p.nombreProducto}"></td>
+                    <td>Q. <span th:text="${#numbers.formatDecimal(p.precio,1,2)}"></span></td>
+                    <td th:text="${p.stock}"></td>
+                    <td>
+                        <span th:class="${p.estado == 1} ? 'badge badge-active' : 'badge badge-inactive'"
+                              th:text="${p.estado == 1} ? 'Activo' : 'Inactivo'"></span>
+                    </td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/productos/editar/{token}(token=${p.encryptedId})}" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm btn-delete"
+                                th:data-url="@{/productos/eliminar/{token}(token=${p.encryptedId})}"
+                                th:data-name="${p.nombreProducto}">Eliminar</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(productos)}">
+                    <td colspan="6">No hay productos registrados.</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
+    </main>
 </div>
 <div th:replace="~{fragments/layout :: deleteModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
