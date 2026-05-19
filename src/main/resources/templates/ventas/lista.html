@@ -1,70 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Ventas')}"></head>
 <body>
-<aside th:replace="~{fragments/layout :: sidebar}"></aside>
-<div class="main-content">
-    <div class="topbar">
-        <h1>🧾 Gestión de Ventas</h1>
-        <div class="topbar-actions">
-            <a th:href="@{/ventas/nuevo}" class="btn btn-primary">➕ Nueva Venta</a>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Ventas</h1>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/ventas/nuevo}" class="btn btn-primary">+ Nueva Venta</a>
+            </div>
         </div>
-    </div>
-    <div class="page-content">
-        <div th:if="${successMsg}" class="alert alert-success" data-auto-close>✅ <span th:text="${successMsg}"></span></div>
-        <div th:if="${errorMsg}" class="alert alert-danger" data-auto-close>❌ <span th:text="${errorMsg}"></span></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-error" th:text="${errorMsg}"></div>
         <div class="card">
-            <div class="card-header">
-                <h2>Lista de Ventas</h2>
-                <div class="search-bar" style="margin:0">
-                    <input type="text" id="tableSearch" placeholder="🔍 Buscar venta..." />
-                </div>
-            </div>
-            <div class="card-body" style="padding:0">
-                <div th:if="${#lists.isEmpty(ventas)}" class="empty-state">
-                    <div class="icon">🧾</div>
-                    <p>No hay ventas registradas.</p>
-                    <a th:href="@{/ventas/nuevo}" class="btn btn-primary" style="margin-top:16px">➕ Nueva Venta</a>
-                </div>
-                <div th:if="${not #lists.isEmpty(ventas)}" class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th><th>Fecha</th><th>Cliente</th><th>Usuario</th><th>Total</th><th>Estado</th><th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="v : ${ventas}">
-                                <td th:text="${v.codigoVenta}"></td>
-                                <td th:text="${#dates.format(new java.util.Date(v.fechaVenta), 'dd/MM/yyyy HH:mm')}"></td>
-                                <td th:text="${v.cliente != null} ? ${v.cliente.nombreCliente + ' ' + v.cliente.apellidoCliente} : 'N/A'"></td>
-                                <td th:text="${v.usuario != null} ? ${v.usuario.username} : 'N/A'"></td>
-                                <td>Q. <span th:text="${#numbers.formatDecimal(v.total, 1, 2)}"></span></td>
-                                <td>
-                                    <span th:if="${v.estado == 1}" class="badge badge-active">Activa</span>
-                                    <span th:if="${v.estado == 0}" class="badge badge-inactive">Anulada</span>
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px">
-                                        <a th:href="@{/ventas/editar/{id}(id=${v.codigoVenta})}"
-                                           class="btn btn-warning btn-sm">✏️ Editar</a>
-                                        <button class="btn btn-danger btn-sm btn-delete"
-                                                th:data-url="@{/ventas/eliminar/{id}(id=${v.codigoVenta})}"
-                                                th:data-name="${'Venta #' + v.codigoVenta}">
-                                            🗑️ Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="emptySearch" class="empty-state" style="display:none;padding:30px">
-                        <p>No se encontraron resultados.</p>
-                    </div>
-                </div>
-            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>#</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estado</th>
+                    <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="v : ${ventas}">
+                    <td th:text="${v.codigoVenta}"></td>
+                    <td th:text="${#dates.format(new java.util.Date(v.fechaVenta), 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${v.cliente.nombreCliente + ' ' + v.cliente.apellidoCliente}"></td>
+                    <td>Q. <span th:text="${#numbers.formatDecimal(v.total,1,2)}"></span></td>
+                    <td>
+                            <span th:class="${v.estado == 1} ? 'badge badge-active' : 'badge badge-inactive'"
+                                  th:text="${v.estado == 1} ? 'Activa' : 'Anulada'"></span>
+                    </td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/ventas/editar/{token}(token=${v.encryptedId})}" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm btn-delete"
+                                th:data-url="@{/ventas/eliminar/{token}(token=${v.encryptedId})}"
+                                th:data-name="'Venta #' + ${v.codigoVenta}">Eliminar</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ventas)}">
+                    <td colspan="6">No hay ventas registradas.</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
+    </main>
 </div>
 <div th:replace="~{fragments/layout :: deleteModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
