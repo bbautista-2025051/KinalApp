@@ -1,100 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
 <body>
 <aside th:replace="~{fragments/layout :: sidebar}"></aside>
 <div class="main-content">
-    <div class="topbar">
-        <h1>🏠 Dashboard</h1>
-        <div class="topbar-actions">
-            <span style="color:#64748b;font-size:.85rem">KinalApp v1.0</span>
-        </div>
-    </div>
+    <div class="topbar"><h1>🏠 Dashboard</h1></div>
     <div class="page-content">
-
-        <!-- Stats -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon blue">👥</div>
-                <div>
-                    <div class="stat-value" th:text="${clientesCount}">0</div>
-                    <div class="stat-label">Clientes (<span th:text="${clientesActivos}">0</span> activos)</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon green">📦</div>
-                <div>
-                    <div class="stat-value" th:text="${productosCount}">0</div>
-                    <div class="stat-label">Productos (<span th:text="${productosActivos}">0</span> activos)</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon yellow">🧾</div>
-                <div>
-                    <div class="stat-value" th:text="${ventasCount}">0</div>
-                    <div class="stat-label">Ventas totales</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon purple">👤</div>
-                <div>
-                    <div class="stat-value" th:text="${usuariosCount}">0</div>
-                    <div class="stat-label">Usuarios (<span th:text="${usuariosActivos}">0</span> activos)</div>
-                </div>
-            </div>
+            <!-- Clientes y Productos: visibles para ADMIN y USER -->
+            <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-value" th:text="${clientesCount}">0</div><div class="stat-label">Clientes (<span th:text="${clientesActivos}">0</span> activos)</div></div></div>
+            <div class="stat-card"><div class="stat-icon green">📦</div><div><div class="stat-value" th:text="${productosCount}">0</div><div class="stat-label">Productos (<span th:text="${productosActivos}">0</span> activos)</div></div></div>
+            <!-- Ventas y Usuarios: solo ADMIN -->
+            <div sec:authorize="hasRole('ADMIN')" class="stat-card"><div class="stat-icon yellow">🧾</div><div><div class="stat-value" th:text="${ventasCount}">0</div><div class="stat-label">Ventas totales</div></div></div>
+            <div sec:authorize="hasRole('ADMIN')" class="stat-card"><div class="stat-icon purple">👤</div><div><div class="stat-value" th:text="${usuariosCount}">0</div><div class="stat-label">Usuarios (<span th:text="${usuariosActivos}">0</span> activos)</div></div></div>
         </div>
-
-        <!-- Accesos rápidos -->
         <div class="card" style="margin-bottom:24px">
             <div class="card-header"><h2>Accesos Rápidos</h2></div>
             <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap">
-                <a th:href="@{/productos/nuevo}" class="btn btn-primary">➕ Nuevo Producto</a>
-                <a th:href="@{/clientes/nuevo}" class="btn btn-success">➕ Nuevo Cliente</a>
-                <a th:href="@{/ventas/nuevo}" class="btn btn-warning">➕ Nueva Venta</a>
+                <!-- Solo ADMIN puede crear nuevo producto -->
+                <a th:href="@{/productos/nuevo}" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">➕ Nuevo Producto</a>
+                <!-- Solo ADMIN puede crear nuevo cliente -->
+                <a th:href="@{/clientes/nuevo}" class="btn btn-success" sec:authorize="hasRole('ADMIN')">➕ Nuevo Cliente</a>
+                <!-- Solo ADMIN puede crear nueva venta -->
+                <a th:href="@{/ventas/nuevo}" class="btn btn-warning" sec:authorize="hasRole('ADMIN')">➕ Nueva Venta</a>
+                <!-- Todos (USER y ADMIN) pueden ver productos -->
                 <a th:href="@{/productos}" class="btn btn-secondary">📦 Ver Productos</a>
+                <!-- Todos (USER y ADMIN) pueden ver clientes -->
                 <a th:href="@{/clientes}" class="btn btn-secondary">👥 Ver Clientes</a>
-                <a th:href="@{/ventas}" class="btn btn-secondary">🧾 Ver Ventas</a>
+                <!-- Solo ADMIN puede ver ventas -->
+                <a th:href="@{/ventas}" class="btn btn-secondary" sec:authorize="hasRole('ADMIN')">🧾 Ver Ventas</a>
             </div>
         </div>
-
-        <!-- Ventas recientes -->
-        <div class="card">
-            <div class="card-header">
-                <h2>Ventas Recientes</h2>
-                <a th:href="@{/ventas}" class="btn btn-secondary btn-sm">Ver todas</a>
-            </div>
+        <!-- Ventas Recientes: solo ADMIN -->
+        <div class="card" sec:authorize="hasRole('ADMIN')">
+            <div class="card-header"><h2>Ventas Recientes</h2><a th:href="@{/ventas}" class="btn btn-secondary btn-sm">Ver todas</a></div>
             <div class="card-body" style="padding:0">
-                <div th:if="${#lists.isEmpty(ventasRecientes)}" class="empty-state" style="padding:40px">
-                    <div class="icon">🧾</div>
-                    <p>No hay ventas registradas aún.</p>
-                </div>
+                <div th:if="${#lists.isEmpty(ventasRecientes)}" class="empty-state"><div class="icon">🧾</div><p>No hay ventas registradas aún.</p></div>
                 <div th:if="${not #lists.isEmpty(ventasRecientes)}" class="table-responsive">
-                    <table>
+                    <table class="table">
                         <thead>
-                            <tr>
-                                <th>#</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Acción</th>
-                            </tr>
+                        <tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Acción</th></tr>
                         </thead>
                         <tbody>
-                            <tr th:each="v : ${ventasRecientes}">
-                                <td th:text="${v.codigoVenta}"></td>
-                                <td th:text="${#dates.format(new java.util.Date(v.fechaVenta), 'dd/MM/yyyy')}"></td>
-                                <td th:text="${v.cliente != null} ? ${v.cliente.nombreCliente} + ' ' + ${v.cliente.apellidoCliente} : 'N/A'"></td>
-                                <td>Q. <span th:text="${#numbers.formatDecimal(v.total, 1, 2)}"></span></td>
-                                <td>
-                                    <span th:if="${v.estado == 1}" class="badge badge-active">Activa</span>
-                                    <span th:if="${v.estado == 0}" class="badge badge-inactive">Anulada</span>
-                                </td>
-                                <td>
-                                    <a th:href="@{/ventas/editar/{id}(id=${v.codigoVenta})}" class="btn btn-warning btn-sm">✏️ Ver</a>
-                                </td>
-                            </tr>
+                        <tr th:each="v : ${ventasRecientes}">
+                            <td th:text="${v.codigoVenta}"></td>
+                            <td th:text="${#dates.format(new java.util.Date(v.fechaVenta), 'dd/MM/yyyy')}"></td>
+                            <td th:text="${v.cliente != null ? v.cliente.nombreCliente + ' ' + v.cliente.apellidoCliente : 'N/A'}"></td>
+                            <td>Q. <span th:text="${#numbers.formatDecimal(v.total, 1, 2)}"></span></td>
+                            <td><span th:class="${v.estado == 1} ? 'badge badge-active' : 'badge badge-inactive'" th:text="${v.estado == 1} ? 'Activa' : 'Anulada'"></span></td>
+                            <td><a th:href="@{/ventas/editar/{token}(token=${v.encryptedId})}" class="btn btn-warning btn-sm">✏️ Ver</a></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
