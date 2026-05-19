@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Acceso Denegado')}"></head>
+<body>
+<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; gap:1.2rem; font-family:'Inter',sans-serif;">
+    <div style="font-size:4rem;">🔒</div>
+    <h1 style="font-size:2rem; color:#f87171;">Acceso Denegado</h1>
+    <p style="color:#9ca3af; max-width:400px;">No tienes permisos para acceder a esta sección. Solo los administradores pueden realizar esta acción.</p>
+    <a th:href="@{/}" class="btn btn-primary" style="margin-top:.5rem;">← Volver al Dashboard</a>
+</div>
+</body>
+</html>

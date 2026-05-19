@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Usuarios')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Usuarios</h1>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/usuarios/nuevo}" class="btn btn-primary">+ Nuevo Usuario</a>
+            </div>
+        </div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-error" th:text="${errorMsg}"></div>
+        <div class="card">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th>
+                    <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.codigoUsuario}"></td>
+                    <td th:text="${u.username}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td th:text="${u.rol}"></td>
+                    <td>
+                            <span th:class="${u.estado == 1} ? 'badge badge-active' : 'badge badge-inactive'"
+                                  th:text="${u.estado == 1} ? 'Activo' : 'Inactivo'"></span>
+                    </td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/usuarios/editar/{token}(token=${u.encryptedId})}" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm btn-delete"
+                                th:data-url="@{/usuarios/eliminar/{token}(token=${u.encryptedId})}"
+                                th:data-name="${u.username}">Eliminar</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(usuarios)}">
+                    <td colspan="6">No hay usuarios registrados.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/layout :: deleteModal}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

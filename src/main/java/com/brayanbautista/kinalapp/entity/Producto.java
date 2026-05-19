@@ -3,6 +3,7 @@ package com.brayanbautista.kinalapp.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+import com.brayanbautista.kinalapp.util.RouteEncryptionUtil;
 
 @Entity
 @Table(name = "productos")
@@ -16,7 +17,7 @@ public class Producto {
     @Column(nullable = false)
     private String nombreProducto;
 
-    @Column(precision = 10, scale = 2,nullable = false)
+    @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal precio;
 
     @Column(nullable = false)
@@ -37,51 +38,21 @@ public class Producto {
         this.estado = estado;
     }
 
-    public Long getCodigoProducto() {
-        return codigoProducto;
-    }
+    // Getters y setters
+    public Long getCodigoProducto() { return codigoProducto; }
+    public void setCodigoProducto(Long codigoProducto) { this.codigoProducto = codigoProducto; }
+    public String getNombreProducto() { return nombreProducto; }
+    public void setNombreProducto(String nombreProducto) { this.nombreProducto = nombreProducto; }
+    public BigDecimal getPrecio() { return precio; }
+    public void setPrecio(BigDecimal precio) { this.precio = precio; }
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
+    public int getEstado() { return estado; }
+    public void setEstado(int estado) { this.estado = estado; }
+    public List<DetalleVenta> getDetallesVenta() { return detallesVenta; }
+    public void setDetallesVenta(List<DetalleVenta> detallesVenta) { this.detallesVenta = detallesVenta; }
 
-    public void setCodigoProducto(Long codigoProducto) {
-        this.codigoProducto = codigoProducto;
-    }
-
-    public String getNombreProducto() {
-        return nombreProducto;
-    }
-
-    public void setNombreProducto(String nombreProducto) {
-        this.nombreProducto = nombreProducto;
-    }
-
-    public BigDecimal getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(BigDecimal precio) {
-        this.precio = precio;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public int getEstado() {
-        return estado;
-    }
-
-    public void setEstado(int estado) {
-        this.estado = estado;
-    }
-
-    public List<DetalleVenta> getDetallesVenta() {
-        return detallesVenta;
-    }
-
-    public void setDetallesVenta(List<DetalleVenta> detallesVenta) {
-        this.detallesVenta = detallesVenta;
+    public String getEncryptedId() {
+        return RouteEncryptionUtil.encryptLong(this.codigoProducto);
     }
 }
